@@ -1,13 +1,11 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import { createCheckoutSession } from '@/lib/billing';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
-  const supabase = await createClient();
   const { searchParams } = new URL(request.url);
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
-  const sessionId = searchParams.get('session_id');
 
   if (success || canceled) {
     return redirect(`/admin/billing?success=${success ? '1' : ''}&canceled=${canceled ? '1' : ''}`);

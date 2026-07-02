@@ -32,7 +32,7 @@ export function AgencySettingsForm() {
   useEffect(() => {
     const fetchSettings = async () => {
       const supabase = createClient();
-      const { data, error } = await supabase.from('agencies').select('name,email,phone,address,primary_color,secondary_color').single();
+      const { data } = await supabase.from('agencies').select('name,email,phone,address,primary_color,secondary_color').single();
       
       if (data) {
         setSettings({
