@@ -2,6 +2,10 @@
 
 A production-ready multi-tenant real estate SaaS platform built with Next.js, Supabase, and Stripe.
 
+[![CI](https://github.com/arana07i/RealEstate/actions/workflows/ci.yml/badge.svg)](https://github.com/arana07i/RealEstate/actions/workflows/ci.yml)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 - **Property Listings** - Beautiful galleries with image uploads, filtering, and search
