@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <rect width="600" height="400" fill="#1a3c34"/>
+  <rect y="380" width="600" height="20" fill="#c4a35a"/>
+  <path d="M300 120 L380 280 H220 Z" fill="#2d5a4e" opacity="0.6"/>
+  <rect x="260" y="200" width="80" height="80" fill="#c4a35a" opacity="0.3" rx="4"/>
+  <text x="300" y="340" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="#c4a35a" opacity="0.8">Property Image</text>
+</svg>
