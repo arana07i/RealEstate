@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createCheckoutSession } from '@/lib/billing';
 import { createClient } from '@/lib/supabase/server';
+import { StripeCheckoutSchema } from '@/lib/validations';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -35,11 +36,13 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const tier = formData.get('tier') as 'starter' | 'professional' | 'enterprise';
 
-  if (!tier || !['starter', 'professional', 'enterprise'].includes(tier)) {
+  const validationResult = StripeCheckoutSchema.safeParse({ tier });
+  if (!validationResult.success) {
     return redirect('/admin/billing');
   }
 
-  const checkoutUrl = await createCheckoutSession(agencyId, tier);
+  const { tier: validatedTier } = validationResult.data;
+  const checkoutUrl = await createCheckoutSession(agencyId, validatedTier);
 
   if (checkoutUrl) {
     return redirect(checkoutUrl);

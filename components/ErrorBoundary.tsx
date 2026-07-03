@@ -2,7 +2,7 @@
 
 import { Component, ReactNode } from 'react';
 import { logger } from '@/lib/logger';
-import { reportError } from '@/lib/monitoring';
+import { reportError, setupGlobalErrorHandler } from '@/lib/monitoring';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -18,6 +18,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
+  }
+
+  override componentDidMount() {
+    setupGlobalErrorHandler();
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { handleStripeWebhook } from '@/lib/billing';
 import { logger } from '@/lib/logger';
+import { storeWebhookEvent, markWebhookProcessed, getWebhookEvent } from '@/lib/webhooks';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-04-10',
@@ -36,8 +37,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
+  // Idempotency: Check if already processed
+  const existingEvent = await getWebhookEvent(event.id);
+  if (existingEvent?.processed) {
+    logger.info('Duplicate webhook received', { eventId: event.id });
+    return NextResponse.json({ received: true });
+  }
+
+  // Store event before processing
+  const stored = await storeWebhookEvent(event);
+  if (!stored) {
+    return NextResponse.json({ error: 'Failed to store event' }, { status: 500 });
+  }
+
   try {
     await handleStripeWebhook(event);
+    await markWebhookProcessed(event.id);
     return NextResponse.json({ received: true });
   } catch (err) {
     logger.error('Webhook handler failed', { error: (err as Error).message });

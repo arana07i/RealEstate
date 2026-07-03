@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type { InquiryFormData } from '@/lib/types';
+import { InquirySchema } from '@/lib/validations';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { sanitizeText, sanitizeEmail, validateEmail, validatePhone } from '@/lib/utils';
+import { sanitizeText, sanitizeEmail } from '@/lib/utils';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { sendInquiryNotification } from '@/lib/email';
@@ -11,9 +11,6 @@ const getClient = (): SupabaseClient | null => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('Missing Supabase environment variables');
-    }
     return null;
   }
   if (!supabaseClient) {
@@ -22,15 +19,6 @@ const getClient = (): SupabaseClient | null => {
     supabaseClient = createSupabaseClient(url, key);
   }
   return supabaseClient;
-};
-
-const validateInquiry = (data: Partial<InquiryFormData>): string | null => {
-  if (!data.name || data.name.trim().length === 0) return 'Name is required';
-  if (!data.email || !validateEmail(data.email)) return 'Valid email is required';
-  if (!data.phone || !validatePhone(data.phone)) return 'Valid phone number is required';
-  if (!data.message || data.message.trim().length === 0) return 'Message is required';
-  if (data.message && data.message.length > 2000) return 'Message is too long (max 2000 characters)';
-  return null;
 };
 
 export async function POST(request: NextRequest) {
@@ -51,16 +39,18 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { agency_id, property_id, name, email, phone, message }: InquiryFormData & { agency_id: string } = body;
-
-    const validationError = validateInquiry({ property_id, name, email, phone, message });
-    if (validationError) {
-      return NextResponse.json({ error: validationError }, { status: 400 });
+    
+    const validationResult = InquirySchema.safeParse({
+      ...body,
+      agency_id: body.agency_id,
+    });
+    
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors.map((e) => e.message).join(', ');
+      return NextResponse.json({ error: errorMessages }, { status: 400 });
     }
 
-    if (!agency_id) {
-      return NextResponse.json({ error: 'Agency ID required' }, { status: 400 });
-    }
+    const { agency_id, property_id, name, email, phone, message } = validationResult.data;
 
     const supabase = getClient();
     if (!supabase) {
@@ -82,7 +72,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to submit inquiry' }, { status: 500 });
     }
 
-    // Send email notification
     const { data: agency } = await supabase
       .from('agencies')
       .select('email')
@@ -95,7 +84,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, message: 'Inquiry submitted successfully' });
-  } catch {
+  } catch (err) {
+    logger.error('Invalid request body', { error: (err as Error).message });
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 }

@@ -115,18 +115,34 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
   message      TEXT NOT NULL,
   status       TEXT NOT NULL DEFAULT 'new'
                CHECK (status IN ('new', 'contacted', 'closed', 'spam')),
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  email_opened BOOLEAN DEFAULT false,
+  last_contacted_at TIMESTAMPTZ,
+  source TEXT
 );
 
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
--- Anyone can create inquiries (contact form)
 DROP POLICY IF EXISTS "Anyone insert inquiries" ON public.inquiries;
 CREATE POLICY "Anyone insert inquiries"
   ON public.inquiries
   FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Agency read inquiries" ON public.inquiries;
+CREATE POLICY "Agency read inquiries"
+  ON public.inquiries
+  FOR SELECT
+  TO authenticated
+  USING (agency_id = current_setting('request.agency_id')::UUID);
+
+DROP POLICY IF EXISTS "Agency update inquiries" ON public.inquiries;
+CREATE POLICY "Agency update inquiries"
+  ON public.inquiries
+  FOR UPDATE
+  TO authenticated
+  USING (agency_id = current_setting('request.agency_id')::UUID);
 
 -- ---------------------------------------------------------------------------
 -- Indexes
@@ -225,6 +241,23 @@ CREATE POLICY "Admins delete property images"
   FOR DELETE
   TO authenticated
   USING (bucket_id = 'property-images');
+
+-- ---------------------------------------------------------------------------
+-- Webhook Events Table (for idempotency)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.webhook_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  stripe_event_id TEXT NOT NULL UNIQUE,
+  event_type TEXT NOT NULL,
+  payload JSONB NOT NULL,
+  processed BOOLEAN NOT NULL DEFAULT false,
+  processed_at TIMESTAMPTZ,
+  error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_webhook_events_processed ON public.webhook_events(processed);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_stripe_id ON public.webhook_events(stripe_event_id);
 
 -- ---------------------------------------------------------------------------
 -- Seed data (remove in production or customise)

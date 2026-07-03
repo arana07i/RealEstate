@@ -45,7 +45,7 @@ async function checkRateLimitRedis(ip: string, endpoint: string): Promise<{ allo
 
   if (!entry || now > entry.resetTime) {
     const newEntry: RateLimitEntry = { count: 1, resetTime: now + WINDOW_MS };
-    await (client as { set: (k: string, v: string) => Promise<void> }).set(key, JSON.stringify(newEntry));
+    await (client as { set: (k: string, v: string, opts?: { EX?: number }) => Promise<void> }).set(key, JSON.stringify(newEntry), { EX: Math.ceil(WINDOW_MS / 1000) });
     return { allowed: true, remaining: MAX_REQUESTS - 1, resetTime: now + WINDOW_MS };
   }
 
@@ -54,7 +54,7 @@ async function checkRateLimitRedis(ip: string, endpoint: string): Promise<{ allo
   }
 
   entry.count++;
-  await (client as { set: (k: string, v: string) => Promise<void> }).set(key, JSON.stringify(entry));
+  await (client as { set: (k: string, v: string, opts?: { EX?: number }) => Promise<void> }).set(key, JSON.stringify(entry), { EX: Math.ceil(WINDOW_MS / 1000) });
   return { allowed: true, remaining: MAX_REQUESTS - entry.count, resetTime: entry.resetTime };
 }
 

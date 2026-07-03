@@ -3,6 +3,7 @@ import { Montserrat, Inter, Geist } from 'next/font/google';
 import './globals.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'react-hot-toast';
+import { QueryProvider } from '@/components/QueryProvider';
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -38,7 +39,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={cn(montserrat.variable, inter.variable, "font-sans", geist.variable)}>
       <body>
-        <ErrorBoundary>{children}</ErrorBoundary>
+        <QueryProvider>
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </QueryProvider>
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </body>
     </html>
