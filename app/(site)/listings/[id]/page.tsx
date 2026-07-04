@@ -5,6 +5,7 @@ import { getListingById, getListingIds } from '@/lib/listings';
 import { formatPrice, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils';
 import { ImageWithFallback } from '@/components/ImageWithFallback';
 import { InquiryForm } from '@/components/InquiryForm';
+import { generatePropertySchema, generateBreadcrumbSchema } from '@/lib/seo';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -42,6 +43,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       ...(image && { images: [{ url: image }] }),
     },
+    alternates: {
+      canonical: `/listings/${listing.id}`,
+    },
   };
 }
 
@@ -56,9 +60,24 @@ export default async function ListingDetailPage({ params }: PageProps) {
   }
 
   const images = listing.image_urls.length > 0 ? listing.image_urls : [PLACEHOLDER_IMAGE];
+  const propertySchema = generatePropertySchema(listing);
+  const breadcrumbs = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://himalayancrestrealty.com/' },
+    { name: 'Properties', url: 'https://himalayancrestrealty.com/#listings' },
+    { name: listing.title, url: `https://himalayancrestrealty.com/listings/${listing.id}` },
+  ]);
 
   return (
     <article className="pt-[72px]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(propertySchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
+      />
+      
       <div className="bg-primary-dark">
         <div className="mx-auto grid max-w-7xl gap-1 px-0 md:grid-cols-2 md:px-6 md:py-6">
           <div className="relative aspect-[16/10] md:rounded-l-xl overflow-hidden">
@@ -83,7 +102,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
         <div className="mt-6 grid gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <p className="text-sm font-medium uppercase tracking-wider text-accent">{listing.location}</p>
+            <p className="section-eyebrow">{listing.location}</p>
             <h1 className="mt-2 text-3xl font-bold text-primary md:text-4xl">{listing.title}</h1>
             <p className="mt-2 text-3xl font-bold text-primary">{formatPrice(Number(listing.price))}</p>
 

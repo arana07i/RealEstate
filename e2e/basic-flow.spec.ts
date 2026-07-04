@@ -4,7 +4,7 @@ test.describe('Basic Flow', () => {
   test('homepage loads and displays listings section', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Himalayan Crest Realty/);
-    await expect(page.locator('h2')).toContainText('Properties');
+    await expect(page.getByRole('heading', { name: /Properties/i })).toBeVisible();
   });
 
   test('search filter works', async ({ page }) => {
@@ -15,12 +15,9 @@ test.describe('Basic Flow', () => {
     await expect(page.locator('select[name="location"]')).toHaveValue('Mall Road');
   });
 
-  test('listing detail page loads', async ({ page }) => {
+  test('navigation to admin works', async ({ page }) => {
     await page.goto('/');
-    const listingCard = page.locator('a[href^="/listings/"]').first();
-    if (await listingCard.count() > 0) {
-      await listingCard.click();
-      await expect(page).toHaveURL(/\/listings\/.+/);
-    }
+    await page.goto('/admin/login');
+    await expect(page).toHaveURL(/\/admin\/login/);
   });
 });

@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     siteName: 'Himalayan Crest Realty',
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

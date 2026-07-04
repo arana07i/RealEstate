@@ -1,5 +1,7 @@
 ﻿export type PricingTier = "starter" | "professional" | "enterprise";
 
+export type AuditAction = 'create' | 'read' | 'update' | 'delete' | 'login' | 'logout';
+
 export interface Agency {
   id: string;
   name: string;

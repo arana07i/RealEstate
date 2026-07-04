@@ -1,3 +1,5 @@
+import { getListings } from '@/lib/listings';
+
 export const runtime = 'edge';
 
 export async function GET() {
@@ -5,16 +7,28 @@ export async function GET() {
   const date = new Date().toISOString();
 
   const staticUrls = [
-    '/',
-    '/#listings',
-    '/#about',
-    '/#contact',
-    '/privacy',
-    '/terms',
+    { url: '/', changefreq: 'daily', priority: '1.0' },
+    { url: '/#listings', changefreq: 'daily', priority: '0.9' },
+    { url: '/#features', changefreq: 'monthly', priority: '0.8' },
+    { url: '/#pricing', changefreq: 'monthly', priority: '0.8' },
+    { url: '/privacy', changefreq: 'monthly', priority: '0.5' },
+    { url: '/terms', changefreq: 'monthly', priority: '0.5' },
+    { url: '/onboarding', changefreq: 'monthly', priority: '0.7' },
   ];
 
-  const urlElements = staticUrls
-    .map((url) => `  <url><loc>${baseUrl}${url}</loc><lastmod>${date}</lastmod><changefreq>${url === '/' || url === '/#listings' ? 'daily' : 'monthly'}</changefreq><priority>${url === '/' ? '1.0' : '0.8'}</priority></url>`)
+  const listings = await getListings({ status: 'active' });
+  
+  const listingUrls = listings.map((listing) => ({
+    url: `/listings/${listing.id}`,
+    changefreq: 'weekly',
+    priority: '0.8',
+  }));
+
+  const allUrls = [...staticUrls, ...listingUrls];
+
+  const urlElements = allUrls
+    .map(({ url, changefreq, priority }) => 
+      `  <url><loc>${baseUrl}${url}</loc><lastmod>${date}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`)
     .join('\n');
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -25,6 +39,7 @@ ${urlElements}
   return new Response(sitemap, {
     headers: {
       'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600',
     },
   });
 }
