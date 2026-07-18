@@ -24,7 +24,7 @@ describe('formatPrice', () => {
 
   it('formats small values in USD', () => {
     expect(formatPrice(500)).toMatch(/\$500/);
-    expect(formatPrice(1000)).toMatch(/\$1,000/);
+    expect(formatPrice(1000)).toBe('$1K');
   });
 });
 
