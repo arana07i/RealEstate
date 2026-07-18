@@ -3,7 +3,73 @@
 -- =============================================================================
 
 -- ---------------------------------------------------------------------------
--- 1. Visits table
+-- 1. Leads table (must be created before visits)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.leads (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  agency_id   UUID NOT NULL REFERENCES public.agencies(id) ON DELETE CASCADE,
+  first_name  TEXT NOT NULL,
+  last_name   TEXT NOT NULL,
+  email       TEXT,
+  phone       TEXT,
+  status      TEXT NOT NULL DEFAULT 'new'
+            CHECK (status IN ('new', 'qualified', 'proposal', 'negotiation', 'closed_won', 'closed_lost')),
+  source      TEXT,
+  assigned_to UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  value       NUMERIC(14, 2) CHECK (value IS NULL OR value >= 0),
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE OR REPLACE FUNCTION public.handle_leads_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS leads_updated_at ON public.leads;
+CREATE TRIGGER leads_updated_at
+  BEFORE UPDATE ON public.leads
+  FOR EACH ROW EXECUTE FUNCTION public.handle_leads_updated_at();
+
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Agency read leads"
+  ON public.leads
+  FOR SELECT
+  TO authenticated
+  USING (agency_id = current_setting('request.agency_id')::UUID);
+
+CREATE POLICY "Agency insert leads"
+  ON public.leads
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (agency_id = current_setting('request.agency_id')::UUID);
+
+CREATE POLICY "Agency update leads"
+  ON public.leads
+  FOR UPDATE
+  TO authenticated
+  USING (agency_id = current_setting('request.agency_id')::UUID)
+  WITH CHECK (agency_id = current_setting('request.agency_id')::UUID);
+
+CREATE POLICY "Agency delete leads"
+  ON public.leads
+  FOR DELETE
+  TO authenticated
+  USING (agency_id = current_setting('request.agency_id')::UUID);
+
+CREATE INDEX IF NOT EXISTS idx_leads_agency_id ON public.leads(agency_id);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads(status);
+CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON public.leads(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_leads_email ON public.leads(email);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_source ON public.leads(source);
+
+-- ---------------------------------------------------------------------------
+-- 2. Visits table
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.visits (
   id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -73,72 +139,6 @@ CREATE INDEX IF NOT EXISTS idx_visits_lead_id ON public.visits(lead_id);
 CREATE INDEX IF NOT EXISTS idx_visits_agent_id ON public.visits(agent_id);
 CREATE INDEX IF NOT EXISTS idx_visits_scheduled_at ON public.visits(scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_visits_status ON public.visits(status);
-
--- ---------------------------------------------------------------------------
--- 2. Leads table
--- ---------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.leads (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  agency_id   UUID NOT NULL REFERENCES public.agencies(id) ON DELETE CASCADE,
-  first_name  TEXT NOT NULL,
-  last_name   TEXT NOT NULL,
-  email       TEXT,
-  phone       TEXT,
-  status      TEXT NOT NULL DEFAULT 'new'
-            CHECK (status IN ('new', 'qualified', 'proposal', 'negotiation', 'closed_won', 'closed_lost')),
-  source      TEXT,
-  assigned_to UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
-  value       NUMERIC(14, 2) CHECK (value IS NULL OR value >= 0),
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE OR REPLACE FUNCTION public.handle_leads_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = now();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS leads_updated_at ON public.leads;
-CREATE TRIGGER leads_updated_at
-  BEFORE UPDATE ON public.leads
-  FOR EACH ROW EXECUTE FUNCTION public.handle_leads_updated_at();
-
-ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Agency read leads"
-  ON public.leads
-  FOR SELECT
-  TO authenticated
-  USING (agency_id = current_setting('request.agency_id')::UUID);
-
-CREATE POLICY "Agency insert leads"
-  ON public.leads
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (agency_id = current_setting('request.agency_id')::UUID);
-
-CREATE POLICY "Agency update leads"
-  ON public.leads
-  FOR UPDATE
-  TO authenticated
-  USING (agency_id = current_setting('request.agency_id')::UUID)
-  WITH CHECK (agency_id = current_setting('request.agency_id')::UUID);
-
-CREATE POLICY "Agency delete leads"
-  ON public.leads
-  FOR DELETE
-  TO authenticated
-  USING (agency_id = current_setting('request.agency_id')::UUID);
-
-CREATE INDEX IF NOT EXISTS idx_leads_agency_id ON public.leads(agency_id);
-CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads(status);
-CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON public.leads(assigned_to);
-CREATE INDEX IF NOT EXISTS idx_leads_email ON public.leads(email);
-CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_leads_source ON public.leads(source);
 
 -- ---------------------------------------------------------------------------
 -- 3. Lead notes table
