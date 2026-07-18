@@ -276,11 +276,11 @@ export default function AdminDashboardPage() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="month" stroke="#64748b" />
-<YAxis stroke="#64748b" tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
-                   <Tooltip
-                     contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                     formatter={(v: number) => [`$${(v / 1000000).toFixed(2)} M`, 'Revenue']}
-                   />
+<YAxis stroke="#64748b" tickFormatter={(v) => `$${(Number(v) / 1000000).toFixed(1)}M`} />
+<Tooltip
+                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                      formatter={(v) => [`$${(Number(v) / 1000000).toFixed(2)} M`, 'Revenue']}
+                    />
                   <Area type="monotone" dataKey="revenue" stroke="#d4af37" strokeWidth={2} fill="url(#revenueGradient)" />
                 </AreaChart>
               </ResponsiveContainer>
