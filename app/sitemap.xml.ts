@@ -1,4 +1,4 @@
-import { getListings } from '@/lib/listings';
+import { getListingIds } from '@/lib/listings';
 
 export const runtime = 'edge';
 
@@ -16,10 +16,10 @@ export async function GET() {
     { url: '/onboarding', changefreq: 'monthly', priority: '0.7' },
   ];
 
-  const listings = await getListings({ status: 'active' });
-  
-  const listingUrls = listings.map((listing) => ({
-    url: `/listings/${listing.id}`,
+  const listingIds = await getListingIds();
+
+  const listingUrls = listingIds.map((id) => ({
+    url: `/listings/${id}`,
     changefreq: 'weekly',
     priority: '0.8',
   }));

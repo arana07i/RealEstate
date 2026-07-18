@@ -48,7 +48,7 @@ export function InquiryForm({ propertyId }: InquiryFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+    <form onSubmit={handleSubmit} className="mt-6 space-y-6">
       <div>
         <label htmlFor="name" className="label">Name</label>
         <input
@@ -58,7 +58,7 @@ export function InquiryForm({ propertyId }: InquiryFormProps) {
           value={formData.name}
           onChange={handleChange}
           required
-          className="input"
+          className="input rounded-xl focus-visible:ring-2 focus-visible:ring-accent/50"
         />
       </div>
       <div>
@@ -70,7 +70,7 @@ export function InquiryForm({ propertyId }: InquiryFormProps) {
           value={formData.email}
           onChange={handleChange}
           required
-          className="input"
+          className="input rounded-xl focus-visible:ring-2 focus-visible:ring-accent/50"
         />
       </div>
       <div>
@@ -82,7 +82,7 @@ export function InquiryForm({ propertyId }: InquiryFormProps) {
           value={formData.phone}
           onChange={handleChange}
           required
-          className="input"
+          className="input rounded-xl focus-visible:ring-2 focus-visible:ring-accent/50"
         />
       </div>
       <div>
@@ -94,16 +94,16 @@ export function InquiryForm({ propertyId }: InquiryFormProps) {
           onChange={handleChange}
           required
           rows={3}
-          className="input"
+          className="input rounded-xl focus-visible:ring-2 focus-visible:ring-accent/50"
         />
       </div>
-      <button
-        type="submit"
-        disabled={submitting}
-        className="btn btn-primary w-full disabled:opacity-50"
-      >
-        {submitting ? 'Submitting...' : 'Submit Inquiry'}
-      </button>
+<button
+          type="submit"
+          disabled={submitting}
+          className="btn btn-primary w-full disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          {submitting ? 'Submitting...' : 'Submit Inquiry'}
+        </button>
     </form>
   );
 }

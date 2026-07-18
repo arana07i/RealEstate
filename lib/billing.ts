@@ -16,14 +16,14 @@ export const PRICING_TIERS = {
   },
   professional: {
     name: 'Professional',
-    price: 79,
+    price: 89,
     priceId: process.env.STRIPE_PRICE_PROFESSIONAL,
     features: ['Up to 500 listings', 'Priority support', 'Virtual tours', 'Custom branding'],
     maxListings: 500,
   },
   enterprise: {
     name: 'Enterprise',
-    price: 199,
+    price: 149,
     priceId: process.env.STRIPE_PRICE_ENTERPRISE,
     features: ['Unlimited listings', 'Dedicated support', 'API access', 'White-label domain'],
     maxListings: -1,

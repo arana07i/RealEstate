@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getListingByIdAdmin } from '@/lib/listings';
 import { ListingForm } from '@/components/admin/ListingForm';
+import { createClient } from '@/lib/supabase/server';
+import type { UserRole, SupabaseUserRoleData } from '@/lib/types';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -22,10 +24,47 @@ export default async function EditListingPage({ params }: PageProps) {
 
   if (!listing) notFound();
 
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    notFound();
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('agency_id')
+    .eq('id', user.id)
+    .single();
+
+  const { data: userRoleData } = await supabase
+    .from('user_roles')
+    .select(`
+      role_id,
+      agency_id,
+      roles (name)
+    `)
+    .eq('user_id', user.id);
+
+  const roles = userRoleData as SupabaseUserRoleData[] | undefined;
+  const primaryRole = roles?.find((ur) => ur.agency_id === profile?.agency_id) || roles?.[0];
+  const rolesObj = primaryRole?.roles;
+  const roleName = Array.isArray(rolesObj) 
+    ? (typeof rolesObj[0]?.name === 'string' ? rolesObj[0]?.name : undefined)
+    : (typeof rolesObj?.name === 'string' ? rolesObj?.name : undefined);
+  const role = (roleName || 'viewer') as UserRole;
+
+  const canEdit = role === 'super_admin' || role === 'agency_admin' ||
+    (role === 'agent' && listing.created_by === user.id);
+
+  if (!canEdit) {
+    notFound();
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-primary">Edit Listing</h1>
-      <p className="mt-1 text-stone-500">{listing.title}</p>
+      <p className="mt-1 text-muted-foreground">{listing.title}</p>
       <div className="mt-8">
         <ListingForm
           mode="edit"

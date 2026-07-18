@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { siteConfig } from '@/config/site';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -34,19 +35,19 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-100 px-6">
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded bg-accent text-sm font-bold text-primary-dark">HC</span>
-            <span className="text-lg font-bold text-primary">Himalayan Crest Realty</span>
+            <span className="flex h-10 w-10 items-center justify-center rounded bg-accent text-sm font-bold text-primary-dark">{siteConfig.name.charAt(0)}</span>
+            <span className="text-lg font-bold text-primary">{siteConfig.name}</span>
           </Link>
-          <p className="mt-2 text-sm text-stone-500">Admin Portal — Sign in to manage listings</p>
+          <p className="mt-2 text-sm text-muted-foreground">Admin Portal — Sign in to manage listings</p>
         </div>
 
         <form onSubmit={handleSubmit} className="card p-8">
           <h1 className="text-xl font-bold text-primary">Sign In</h1>
-          <p className="mt-1 text-sm text-stone-500">Use your Supabase Auth credentials</p>
+          <p className="mt-1 text-sm text-muted-foreground">Use your Supabase Auth credentials</p>
 
           {error && (
             <div className="mt-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
@@ -64,7 +65,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="admin@himalayancrestrealty.com"
+              placeholder="admin@propertyhub.com"
             />
           </div>
 
@@ -86,7 +87,7 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-stone-400">
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           Protected by Supabase Auth. No hardcoded credentials.
         </p>
       </div>

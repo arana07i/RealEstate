@@ -61,10 +61,10 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md card p-8">
-        <h1 className="text-2xl font-bold text-primary mb-2">Create Your Agency</h1>
-        <p className="text-stone-500 mb-6">Start your 14-day free trial</p>
+        <h1 className="text-2xl font-bold text-primary mb-5">Create Your Agency</h1>
+        <p className="text-muted-foreground mb-6">Start your 14-day free trial</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="bg-red-50 p-3 text-sm text-red-600 rounded">{error}</div>}
@@ -154,7 +154,7 @@ export default function OnboardingPage() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-stone-500">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           Already have an account?{' '}
           <a href="/admin/login" className="text-accent hover:underline">
             Sign in

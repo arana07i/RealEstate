@@ -84,7 +84,7 @@ export function AgencySettingsForm() {
   return (
     <form onSubmit={handleSubmit} className="card p-6 max-w-2xl">
       {loading && (
-        <div className="mb-4 text-center text-stone-500">Loading agency settings...</div>
+        <div className="mb-4 text-center text-muted-foreground">Loading agency settings...</div>
       )}
       {error && <div className="bg-red-50 p-3 text-sm text-red-600 rounded mb-4">{error}</div>}
       {success && <div className="bg-emerald-50 p-3 text-sm text-emerald-600 rounded mb-4">Settings saved!</div>}

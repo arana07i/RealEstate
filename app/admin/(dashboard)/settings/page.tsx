@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
-import { AgencySettingsForm } from '@/components/admin/AgencySettingsForm';
+import { SettingsClient } from '@/components/admin/SettingsClient';
 
 export const metadata: Metadata = {
-  title: 'Agency Settings',
+  title: 'Settings',
   robots: { index: false, follow: false },
 };
 
-export default function AgencySettingsPage() {
+export default function SettingsPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-primary mb-6">Agency Settings</h1>
-      <AgencySettingsForm />
+    <div className="max-w-6xl">
+      <h1 className="text-2xl font-bold text-primary mb-6">Settings</h1>
+      <SettingsClient />
     </div>
   );
 }

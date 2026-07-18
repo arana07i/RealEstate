@@ -112,7 +112,16 @@ export function ListingForm({ mode = 'create', initialData }: ListingFormProps) 
       return;
     }
 
-    const payload = {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      setError('You must be logged in to submit');
+      setSubmitting(false);
+      return;
+    }
+
+    const payload: Record<string, unknown> = {
       title: sanitizeText(formData.title),
       description: sanitizeText(formData.description),
       price: Number(formData.price),
@@ -124,9 +133,13 @@ export function ListingForm({ mode = 'create', initialData }: ListingFormProps) 
       featured: formData.featured,
       draft: formData.draft,
       image_urls: images,
+      updated_by: user.id,
     };
 
-    const supabase = createClient();
+    if (!initialData?.id) {
+      payload.created_by = user.id;
+    }
+
     const { error } = initialData?.id
       ? await supabase.from('listings').update(payload).eq('id', initialData.id)
       : await supabase.from('listings').insert(payload);

@@ -10,7 +10,7 @@ A production-ready multi-tenant real estate SaaS platform built with Next.js, Su
 - **Property Listings** - Beautiful galleries with image uploads, filtering, and search
 - **Inquiry Management** - Lead capture forms with status tracking (new, contacted, closed, spam)
 - **Multi-Tenant Architecture** - Each agency gets isolated data and custom branding
-- **Subscription Billing** - Integrated Stripe payments with 3 tiers (Starter $29/$79/$199)
+- **Subscription Billing** - Integrated Stripe payments with 3 tiers (Starter $29/$89/$149)
 - **Authentication** - Supabase Auth with email/password
 - **Admin Dashboard** - Manage listings, inquiries, and agency settings
 - **Rate Limiting** - Redis-backed API protection

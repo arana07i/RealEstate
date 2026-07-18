@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import { type Inquiry, type InquiryStatus } from "@/lib/types";
+import { type Inquiry, type InquiryStatus, type PaginatedResult } from "@/lib/types";
 import { logger } from "@/lib/logger";
 
-export async function getInquiries(status?: InquiryStatus, agencyId?: string) {
+const DEFAULT_PAGE_SIZE = 20;
+
+export async function getInquiries(status?: InquiryStatus, agencyId?: string): Promise<Inquiry[]> {
   const supabase = await createClient();
 
   let query = supabase
@@ -21,6 +23,50 @@ export async function getInquiries(status?: InquiryStatus, agencyId?: string) {
   }
 
   return (data ?? []) as Inquiry[];
+}
+
+export async function getInquiriesPaginated(
+  status?: InquiryStatus,
+  agencyId?: string,
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE
+): Promise<PaginatedResult<Inquiry>> {
+  const supabase = await createClient();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from("inquiries")
+    .select("*, listings:property_id(title,location)", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (agencyId) query = query.eq("agency_id", agencyId);
+  if (status) query = query.eq("status", status);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    logger.error("getInquiriesPaginated error", { status, message: error.message });
+    return {
+      data: [],
+      page,
+      pageSize,
+      totalRecords: 0,
+      totalPages: 0,
+    };
+  }
+
+  const totalRecords = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
+
+  return {
+    data: (data ?? []) as Inquiry[],
+    page,
+    pageSize,
+    totalRecords,
+    totalPages,
+  };
 }
 
 export async function getInquiryStats(agencyId?: string) {

@@ -7,15 +7,14 @@ import { logger } from '@/lib/logger';
 import { sendInquiryNotification } from '@/lib/email';
 
 let supabaseClient: SupabaseClient | null = null;
-const getClient = (): SupabaseClient | null => {
+const getClient = async (): Promise<SupabaseClient | null> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
     return null;
   }
   if (!supabaseClient) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { createClient: createSupabaseClient } = require('@supabase/supabase-js');
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
     supabaseClient = createSupabaseClient(url, key);
   }
   return supabaseClient;
@@ -52,9 +51,23 @@ export async function POST(request: NextRequest) {
 
     const { agency_id, property_id, name, email, phone, message } = validationResult.data;
 
-    const supabase = getClient();
+    const supabase = await getClient();
     if (!supabase) {
       return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
+    }
+
+    const { data: agency, error: agencyError } = await supabase
+      .from('agencies')
+      .select('id, subscription_status')
+      .eq('id', agency_id)
+      .single();
+
+    if (agencyError || !agency) {
+      return NextResponse.json({ error: 'Invalid agency' }, { status: 400 });
+    }
+
+    if (agency.subscription_status === 'canceled' || agency.subscription_status === 'past_due') {
+      return NextResponse.json({ error: 'Agency is not accepting inquiries' }, { status: 403 });
     }
 
     const { error } = await supabase.from('inquiries').insert({
@@ -72,13 +85,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to submit inquiry' }, { status: 500 });
     }
 
-    const { data: agency } = await supabase
+    const { data: agencyData } = await supabase
       .from('agencies')
       .select('email')
       .eq('id', agency_id)
       .single();
-    if (agency?.email) {
-      sendInquiryNotification(agency.email, { name, email, phone, message }).catch((e) =>
+    if (agencyData?.email) {
+      sendInquiryNotification(agencyData.email, { name, email, phone, message }).catch((e) =>
         logger.error('Failed to send inquiry notification', { error: e.message })
       );
     }

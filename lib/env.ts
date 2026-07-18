@@ -8,6 +8,7 @@ const optionalEnvVars = [
   'STRIPE_WEBHOOK_SECRET',
   'RESEND_API_KEY',
   'REDIS_URL',
+  'GOOGLE_PLACES_API_KEY',
 ] as const;
 
 export function validateEnvironment(): void {

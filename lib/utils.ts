@@ -5,17 +5,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/** Format price in Indian Rupees */
+/** Format price in USD */
 export function formatPrice(price: number): string {
-  if (price >= 10000000) {
-    return `₹${(price / 10000000).toFixed(2)} Cr`;
+  if (price >= 1000000) {
+    return `$${(price / 1000000).toFixed(1)}M`;
   }
-  if (price >= 100000) {
-    return `₹${(price / 100000).toFixed(2)} Lakh`;
+  if (price >= 1000) {
+    return `$${Math.round(price / 1000)}K`;
   }
-  return new Intl.NumberFormat('en-IN', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'INR',
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(price);
 }
@@ -38,18 +38,23 @@ export function slugify(text: string): string {
     .trim();
 }
 
-export const SHIMLA_LOCATIONS = [
+export const GENERIC_LOCATIONS = [
   'All Locations',
-  'Mall Road',
-  'Chotta Shimla',
-  'Mashobra',
-  'Kufri',
-  'Summer Hill',
-  'Sanjauli',
-  'Tara Devi',
-  'Dhalli',
-  'Boileauganj',
+  'Downtown',
+  'City Center',
+  'Business District',
+  'Waterfront',
+  'Suburban Area',
+  'Financial District',
+  'Residential Community',
+  'Historic District',
+  'Urban Center',
+  'Coastal Area',
+  'Premium Neighborhood',
+  'Green Community',
 ] as const;
+
+export const SHIMLA_LOCATIONS = GENERIC_LOCATIONS;
 
 export const PLACEHOLDER_IMAGE = '/images/placeholder-property.svg';
 

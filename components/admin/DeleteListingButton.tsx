@@ -45,7 +45,7 @@ export function DeleteListingButton({ listingId, listingTitle }: DeleteListingBu
   if (confirming) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-stone-500" aria-live="polite">Delete &quot;{listingTitle}&quot;?</span>
+        <span className="text-xs text-muted-foreground" aria-live="polite">Delete &quot;{listingTitle}&quot;?</span>
         <button
           type="button"
           ref={confirmButtonRef}
@@ -59,7 +59,7 @@ export function DeleteListingButton({ listingId, listingTitle }: DeleteListingBu
         <button
           type="button"
           onClick={cancelDelete}
-          className="rounded px-3 py-1 text-xs text-stone-500 hover:text-primary"
+          className="rounded px-3 py-1 text-xs text-muted-foreground hover:text-primary"
           aria-label="Cancel delete"
         >
           Cancel

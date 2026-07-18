@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { siteConfig } from '@/config/site';
 
 export function generateOrganizationSchema(): Metadata {
   return {
@@ -11,26 +12,24 @@ export function generateOrganizationSchema(): Metadata {
 export const ORGANIZATION_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'RealEstateAgent',
-  name: 'Himalayan Crest Realty',
-  url: 'https://himalayancrestrealty.com',
-  logo: 'https://himalayancrestrealty.com/images/logo.png',
-  image: 'https://himalayancrestrealty.com/images/hero.jpg',
-  description: 'Shimla\'s premier real estate agency for luxury homes, heritage properties, and investment opportunities.',
+  name: siteConfig.name,
+  url: siteConfig.seo.ogImage?.replace('/images/og-image.jpg', 'https://propertyhub.com') ?? 'https://propertyhub.com',
+  logo: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/images/logo.png`,
+  image: siteConfig.seo.ogImage ?? 'https://propertyhub.com/images/hero.jpg',
+  description: siteConfig.description,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '42 Mall Road, Near GPO',
-    addressLocality: 'Shimla',
-    addressRegion: 'Himachal Pradesh',
-    postalCode: '171001',
-    addressCountry: 'IN',
+    streetAddress: siteConfig.address,
+    addressLocality: 'Your City',
+    addressCountry: 'US',
   },
-  telephone: '+91-1772-123-456',
-  email: 'hello@himalayancrestrealty.com',
-  areaServed: ['Shimla', 'Mashobra', 'Kufri', 'Summer Hill'],
-  priceRange: '₹₹₹',
+  telephone: siteConfig.phone,
+  email: siteConfig.email,
+  areaServed: ['Global'],
+  priceRange: '$$$',
   sameAs: [
-    'https://twitter.com/himalayancrest',
-    'https://linkedin.com/company/himalayancrestrealty',
+    siteConfig.socialLinks.twitter,
+    siteConfig.socialLinks.linkedin,
   ],
 };
 
@@ -53,7 +52,7 @@ export function generatePropertySchema(listing: {
     image: listing.image_urls,
     offers: {
       '@type': 'Offer',
-      priceCurrency: 'INR',
+      priceCurrency: 'USD',
       price: listing.price,
       availability: 'https://schema.org/Available',
       businessFunction: 'https://schema.org/Sell',
@@ -61,7 +60,7 @@ export function generatePropertySchema(listing: {
     address: {
       '@type': 'PostalAddress',
       addressLocality: listing.location,
-      addressCountry: 'IN',
+      addressCountry: 'US',
     },
     ...(listing.bedrooms && { numberOfRooms: listing.bedrooms }),
     ...(listing.bathrooms && { amenityFeature: [{ '@type': 'PropertyValue', name: 'Bathrooms', value: listing.bathrooms }] }),

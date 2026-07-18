@@ -38,7 +38,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return this.props.fallback || (
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
           <h2 className="text-xl font-bold text-primary">Something went wrong</h2>
-          <p className="mt-2 text-stone-600">Please refresh the page or try again later.</p>
+          <p className="mt-2 text-muted-foreground">Please refresh the page or try again later.</p>
           <button
             type="button"
             onClick={() => window.location.reload()}

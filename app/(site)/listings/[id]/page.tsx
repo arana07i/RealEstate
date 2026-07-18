@@ -1,11 +1,27 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Heart } from 'lucide-react';
 import { getListingById, getListingIds } from '@/lib/listings';
 import { formatPrice, formatDate, PLACEHOLDER_IMAGE } from '@/lib/utils';
-import { ImageWithFallback } from '@/components/ImageWithFallback';
-import { InquiryForm } from '@/components/InquiryForm';
 import { generatePropertySchema, generateBreadcrumbSchema } from '@/lib/seo';
+import { siteConfig } from '@/config/site';
+import { PropertyGallery } from '@/components/PropertyGallery';
+import { VideoTour } from '@/components/VideoTour';
+import { VirtualTour } from '@/components/VirtualTour';
+import { LocationMap } from '@/components/LocationMap';
+import { AmenitiesGrid } from '@/components/AmenitiesGrid';
+import { FloorPlansViewer } from '@/components/FloorPlansViewer';
+import { ScheduleVisitSidebar } from '@/components/ScheduleVisitSidebar';
+import { MortgageCalculator } from '@/components/MortgageCalculator';
+import { EmiCalculator } from '@/components/EmiCalculator';
+import { PriceSparkline } from '@/components/PriceSparkline';
+import { NeighborhoodScore } from '@/components/NeighborhoodScore';
+import { WalkScoreBadge } from '@/components/WalkScoreBadge';
+import { AgentCard } from '@/components/AgentCard';
+import { ReviewsSection } from '@/components/ReviewsSection';
+import { RelatedProperties } from '@/components/RelatedProperties';
+import { ShareActions } from '@/components/ShareActions';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const image = listing.image_urls[0];
 
   return {
-    title: listing.title,
+    title: `${listing.title} | ${siteConfig.name}`,
     description,
     openGraph: {
       title: listing.title,
@@ -38,7 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@himalayancrest',
+      site: siteConfig.socialLinks.twitter?.replace('https://twitter.com/', '@') ?? '@propertyhub',
       title: listing.title,
       description,
       ...(image && { images: [{ url: image }] }),
@@ -62,13 +78,15 @@ export default async function ListingDetailPage({ params }: PageProps) {
   const images = listing.image_urls.length > 0 ? listing.image_urls : [PLACEHOLDER_IMAGE];
   const propertySchema = generatePropertySchema(listing);
   const breadcrumbs = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://himalayancrestrealty.com/' },
-    { name: 'Properties', url: 'https://himalayancrestrealty.com/#listings' },
-    { name: listing.title, url: `https://himalayancrestrealty.com/listings/${listing.id}` },
+    { name: 'Home', url: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/` },
+    { name: 'Properties', url: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}#listings` },
+    { name: listing.title, url: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/listings/${listing.id}` },
   ]);
 
+  const propertyUrl = `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/listings/${listing.id}`;
+
   return (
-    <article className="pt-[72px]">
+    <article className="pt-[72px] bg-background min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(propertySchema) }}
@@ -77,64 +95,112 @@ export default async function ListingDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
-      
-      <div className="bg-primary-dark">
-        <div className="mx-auto grid max-w-7xl gap-1 px-0 md:grid-cols-2 md:px-6 md:py-6">
-          <div className="relative aspect-[16/10] md:rounded-l-xl overflow-hidden">
-            <ImageWithFallback src={images[0]} alt={listing.title} fill className="object-cover" priority sizes="(max-width: 768px) 100vw, 50vw" />
-          </div>
-          {images.length > 1 && (
-            <div className="hidden grid-cols-2 gap-1 md:grid">
-              {images.slice(1, 5).map((url, i) => (
-                <div key={url} className={`relative aspect-[4/3] overflow-hidden ${i === 1 ? 'rounded-tr-xl' : ''} ${i === 3 ? 'rounded-br-xl' : ''}`}>
-                  <ImageWithFallback src={url} alt={`${listing.title} — photo ${i + 2}`} fill className="object-cover" sizes="25vw" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+
+      <PropertyGallery images={images} title={listing.title} />
 
       <div className="mx-auto max-w-7xl px-6 py-12">
         <Link href="/#listings" className="text-sm font-medium text-accent hover:underline">
           ← Back to Listings
         </Link>
 
-        <div className="mt-6 grid gap-12 lg:grid-cols-3">
+        <div className="mt-8 grid gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <p className="section-eyebrow">{listing.location}</p>
-            <h1 className="mt-2 text-3xl font-bold text-primary md:text-4xl">{listing.title}</h1>
-            <p className="mt-2 text-3xl font-bold text-primary">{formatPrice(Number(listing.price))}</p>
+            <div>
+              <p className="section-eyebrow">{listing.location}</p>
+              <h1 className="mt-2 text-3xl font-bold text-primary md:text-4xl mb-5">{listing.title}</h1>
+              
+              <div className="mt-4 flex items-end gap-6">
+                <p className="text-3xl font-bold text-primary">{formatPrice(Number(listing.price))}</p>
+                {listing.previous_price && (
+                  <span className="text-lg text-muted-foreground line-through">
+                    was {formatPrice(listing.previous_price)}
+                  </span>
+                )}
+              </div>
 
-            {(listing.bedrooms || listing.bathrooms || listing.area_sqft) && (
-              <ul className="mt-6 flex flex-wrap gap-6 border-y border-stone-200 py-6 text-stone-600">
-                {listing.bedrooms != null && (
-                  <li><strong className="text-primary">{listing.bedrooms}</strong> Bedrooms</li>
-                )}
-                {listing.bathrooms != null && (
-                  <li><strong className="text-primary">{listing.bathrooms}</strong> Bathrooms</li>
-                )}
-                {listing.area_sqft != null && (
-                  <li><strong className="text-primary">{listing.area_sqft.toLocaleString('en-IN')}</strong> sq ft</li>
-                )}
-              </ul>
-            )}
+              <div className="mt-4">
+                <PriceSparkline price={listing.price} previousPrice={listing.previous_price} />
+              </div>
 
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold text-primary">About This Property</h2>
-              <p className="mt-4 whitespace-pre-line leading-relaxed text-stone-600">{listing.description}</p>
+              {(listing.bedrooms || listing.bathrooms || listing.area_sqft) && (
+                <ul className="mt-8 flex flex-wrap gap-8 border-y border-border py-6">
+                  {listing.bedrooms != null && (
+                    <li>
+                      <span className="block text-2xl font-bold text-primary">{listing.bedrooms}</span>
+                      <span className="text-sm text-muted-foreground">Bedrooms</span>
+                    </li>
+                  )}
+                  {listing.bathrooms != null && (
+                    <li>
+                      <span className="block text-2xl font-bold text-primary">{listing.bathrooms}</span>
+                      <span className="text-sm text-muted-foreground">Bathrooms</span>
+                    </li>
+                  )}
+                  {listing.area_sqft != null && (
+                    <li>
+                      <span className="block text-2xl font-bold text-primary">{listing.area_sqft.toLocaleString('en-US')}</span>
+                      <span className="text-sm text-muted-foreground">sq ft</span>
+                    </li>
+                  )}
+                </ul>
+              )}
+
+              <ShareActions propertyId={listing.id} propertyTitle={listing.title} propertyUrl={propertyUrl} />
             </div>
 
-            <p className="mt-8 text-sm text-stone-400">Listed on {formatDate(listing.created_at)}</p>
-          </div>
+            <div className="mt-12">
+              <h2 className="text-xl font-semibold text-primary mb-5">About This Property</h2>
+              <p className="mt-4 whitespace-pre-line leading-relaxed text-muted-foreground mb-10">{listing.description}</p>
+            </div>
 
-          <aside className="card h-fit p-8">
-            <h2 className="text-lg font-semibold text-primary">Schedule a Viewing</h2>
-            <p className="mt-2 text-sm text-stone-600">
-              Interested in this property? Contact our team for a private viewing.
-            </p>
-            <InquiryForm propertyId={listing.id} />
-          </aside>
+            <AmenitiesGrid amenities={listing.amenities} />
+
+            <FloorPlansViewer floorPlans={listing.floor_plans} />
+
+            {listing.video_url && <VideoTour videoUrl={listing.video_url!} />}
+
+            {listing.virtual_tour_url && <VirtualTour virtualTourUrl={listing.virtual_tour_url} />}
+
+            <LocationMap location={listing.location} />
+
+            <NeighborhoodScore score={listing.property_score} />
+
+            <WalkScoreBadge score={85} />
+
+            <AgentCard
+              agentName={listing.agent_name}
+              agentPhone={listing.agent_phone}
+              agentAvatar={listing.agent_avatar}
+              availability={listing.agent_availability}
+            />
+
+            <ReviewsSection listingId={listing.id} />
+
+            <MortgageCalculator price={listing.price} />
+
+            <EmiCalculator price={listing.price} />
+
+            <RelatedProperties />
+
+            <p className="mt-8 text-sm text-muted-foreground">Listed on {formatDate(listing.created_at)}</p>
+            </div>
+
+            <div className="hidden lg:block">
+              <div className="sticky top-20">
+                <ScheduleVisitSidebar propertyId={listing.id} propertyTitle={listing.title} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card p-4 lg:hidden">
+        <div className="flex gap-3">
+          <button className="btn btn-primary flex-1">
+            Schedule Visit
+          </button>
+          <button className="btn btn-outline w-12">
+            <Heart size={20} />
+          </button>
         </div>
       </div>
     </article>
