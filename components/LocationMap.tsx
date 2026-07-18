@@ -78,7 +78,9 @@ export function LocationMap({ location, coordinates, height = '300px', showDirec
 
   const loadGoogleMap = async () => {
     if (typeof window === 'undefined') return;
-    if (!window.google?.maps) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const googleWindow = window as unknown as { google?: { maps: any } };
+    if (!googleWindow.google?.maps) {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
@@ -87,8 +89,10 @@ export function LocationMap({ location, coordinates, height = '300px', showDirec
     }
 
     const checkAndInit = () => {
-      if (window.google?.maps && mapRef.current) {
-        const map = new window.google.maps.Map(mapRef.current, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const googleWindow = window as unknown as { google?: { maps: any } };
+      if (googleWindow.google?.maps && mapRef.current) {
+        const map = new googleWindow.google.maps.Map(mapRef.current, {
           center: mapCenter,
           zoom: 14,
           styles: [
@@ -96,7 +100,7 @@ export function LocationMap({ location, coordinates, height = '300px', showDirec
           ],
         });
 
-        new window.google.maps.Marker({
+        new googleWindow.google.maps.Marker({
           position: mapCenter,
           map,
           title: location,
@@ -106,11 +110,11 @@ export function LocationMap({ location, coordinates, height = '300px', showDirec
       }
     };
 
-    if (window.google?.maps) {
+    if ((window as unknown as { google?: unknown }).google) {
       checkAndInit();
     } else {
       const interval = setInterval(() => {
-        if (window.google?.maps) {
+        if ((window as unknown as { google?: unknown }).google) {
           checkAndInit();
           clearInterval(interval);
         }

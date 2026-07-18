@@ -45,8 +45,8 @@ export default function CrmClient() {
       if (filters.tags && filters.tags.length > 0) {
         filters.tags.forEach(t => searchParams.append('tags', t));
       }
-      if (filters.assigned_to) {
-        searchParams.set('assigned_to', filters.assigned_to);
+      if (filters.assigned_to && filters.assigned_to.length > 0) {
+        filters.assigned_to.forEach(a => searchParams.append('assigned_to', a));
       }
       if (filters.search) {
         searchParams.set('search', filters.search);
@@ -140,12 +140,12 @@ export default function CrmClient() {
     const csv = [
       ["Name", "Email", "Phone", "Status", "Source", "Value", "Tags"],
       ...filteredLeads.map((l) => [
-        `${l.first_name} ${l.last_name}`,
-        l.email,
-        l.phone,
-        l.status,
-        l.source,
-        l.value.toString(),
+`${l.first_name} ${l.last_name}`,
+         l.email ?? "",
+         l.phone ?? "",
+         l.status,
+         l.source,
+         l.value?.toString() ?? "",
         l.tags.map((t) => t.name).join(", "),
       ]),
     ]

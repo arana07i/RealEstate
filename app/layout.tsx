@@ -28,6 +28,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: siteConfig.name,
+    images: [{ url: siteConfig.seo.ogImage }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: siteConfig.socialLinks.twitter?.replace('https://twitter.com/', '@') ?? '@propertyhub',
+    images: [{ url: siteConfig.seo.ogImage }],
+  },
+  alternates: {
+    canonical: '/',
   },
   robots: {
     index: true,

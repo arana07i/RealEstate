@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { formatPrice } from '@/lib/utils';
-import { Card } from '@/components/ui/Card';
 import { X } from 'lucide-react';
 
 interface ComparisonProperty {
@@ -65,7 +64,7 @@ export default function ComparisonPage() {
                 >
                   <X size={16} />
                 </button>
-                <div className="aspect-video w-full rounded-lg bg-muted" />
+                <div className="aspect-video w-full rounded-lg bg-muted" aria-label={`${property.title} - Property image placeholder`} />
                 <p className="mt-3 font-semibold text-primary">{property.title}</p>
                 <p className="text-sm text-muted-foreground">{property.location}</p>
                 <p className="mt-2 text-lg font-bold text-primary">{formatPrice(property.price)}</p>

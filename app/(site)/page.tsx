@@ -4,10 +4,12 @@ import { getListings } from '@/lib/listings';
 import { ListingCard } from '@/components/ListingCard';
 import { SearchFilter } from '@/components/SearchFilter';
 import { ListingFilters } from '@/lib/types';
-import { ORGANIZATION_SCHEMA } from '@/lib/seo';
+import { generateFAQSchema, getOrganizationSchema } from '@/lib/seo';
 import { EmptyState } from '@/components/EmptyState';
 import { ListingPagination } from '@/components/ListingPagination';
 import { HeroSection } from '@/components/HeroSection';
+import { siteConfig } from '@/config/site';
+import { getSiteUrl } from '@/lib/env';
 import { Award, Users, TrendingUp, Home as HomeIcon, MessageSquare, Lock, BarChart3, Video, Calendar, FileText, Bot, Building2, Star, Plus, X } from 'lucide-react';
 
 interface PageProps {
@@ -18,6 +20,20 @@ export const metadata = {
   title: 'PropertyHub | Modern Real Estate Platform',
   description: 'Professional real estate platform for agencies worldwide. Discover premium properties, manage listings, and connect with buyers.',
   keywords: 'real estate, property, housing, commercial, residential, agency, CRM, listings, virtual tours',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    siteName: siteConfig.name,
+    images: [{ url: siteConfig.seo.ogImage }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: siteConfig.socialLinks.twitter?.replace('https://twitter.com/', '@') ?? '@propertyhub',
+    images: [{ url: siteConfig.seo.ogImage }],
+  },
+  alternates: {
+    canonical: '/',
+  },
 };
 
 const stats = [
@@ -132,10 +148,15 @@ export default async function MarketingPage({ searchParams }: PageProps) {
 
    return (
      <>
-       <script
-         type="application/ld+json"
-         dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_SCHEMA) }}
-       />
+<script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(getOrganizationSchema(getSiteUrl())) }}
+          />
+
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(generateFAQSchema(faqs.map(f => ({ question: f.q, answer: f.a })))) }}
+          />
 
        <HeroSection />
 
@@ -193,8 +214,8 @@ export default async function MarketingPage({ searchParams }: PageProps) {
               What Our Clients Say
             </h2>
 <p className="mt-4 text-lg text-muted-foreground">
-               Real stories from families who found their mountain home with us.
-             </p>
+                Real stories from clients who found their dream property with us.
+              </p>
           </div>
 
           <div className="mt-16 grid gap-6 md:grid-cols-3">

@@ -48,7 +48,6 @@ if (process.env.NODE_ENV !== 'production') {
     validateEnvironment();
   } catch (error) {
     console.error(error);
-    process.exit(1);
   }
 }
 
@@ -78,4 +77,8 @@ export function isDevelopment(): boolean {
 
 export function getSiteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL ?? 'https://himalayancrestrealty.com';
+}
+
+export function getMeetingLinkBase(): string {
+  return process.env.NEXT_PUBLIC_MEETING_LINK_BASE ?? 'https://meet.hcrealestate.com';
 }

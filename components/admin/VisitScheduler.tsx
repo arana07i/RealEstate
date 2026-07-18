@@ -17,8 +17,29 @@ interface VisitSchedulerProps {
   onSuccess?: () => void;
 }
 
+interface PropertyOption {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+}
+
+interface LeadOption {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+}
+
+interface AgentOption {
+  id: string;
+  full_name: string;
+  email: string;
+}
+
 export function VisitScheduler({ isOpen, onClose, selectedDate, visit, onSuccess }: VisitSchedulerProps) {
-  const [formData, setFormData] = useState<VisitFormData>({
+   const [formData, setFormData] = useState<VisitFormData>({
     property_id: '',
     lead_id: '',
     agent_id: '',
@@ -154,7 +175,7 @@ export function VisitScheduler({ isOpen, onClose, selectedDate, visit, onSuccess
                  disabled={!!visit}
                >
                 <option value="">Select Property</option>
-                {properties?.map((p: any) => (
+                {properties?.map((p: PropertyOption) => (
                   <option key={p.id} value={p.id}>{p.title}</option>
                 ))}
               </select>
@@ -172,7 +193,7 @@ export function VisitScheduler({ isOpen, onClose, selectedDate, visit, onSuccess
                  disabled={!!visit}
                >
                 <option value="">Select Lead</option>
-                {leads?.map((l: any) => (
+                {leads?.map((l: LeadOption) => (
                   <option key={l.id} value={l.id}>
                     {l.first_name} {l.last_name}
                   </option>
@@ -191,7 +212,7 @@ export function VisitScheduler({ isOpen, onClose, selectedDate, visit, onSuccess
                  className="w-full rounded-lg border border-border px-3 py-2 bg-card dark:bg-muted dark:border-border"
                >
                 <option value="">Select Agent</option>
-                {agents?.map((a: any) => (
+                {agents?.map((a: AgentOption) => (
                   <option key={a.id} value={a.id}>{a.full_name}</option>
                 ))}
               </select>

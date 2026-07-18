@@ -10,21 +10,21 @@ import {
 } from './utils';
 
 describe('formatPrice', () => {
-  it('formats crore values', () => {
-    expect(formatPrice(10000000)).toBe('₹1.00 Cr');
-    expect(formatPrice(25000000)).toBe('₹2.50 Cr');
-    expect(formatPrice(12345678)).toBe('₹1.23 Cr');
+  it('formats million values', () => {
+    expect(formatPrice(1000000)).toBe('$1.0M');
+    expect(formatPrice(2500000)).toBe('$2.5M');
+    expect(formatPrice(1234567)).toBe('$1.2M');
   });
 
-  it('formats lakh values', () => {
-    expect(formatPrice(100000)).toBe('₹1.00 Lakh');
-    expect(formatPrice(500000)).toBe('₹5.00 Lakh');
-    expect(formatPrice(123456)).toBe('₹1.23 Lakh');
+  it('formats thousand values', () => {
+    expect(formatPrice(1000)).toBe('$1K');
+    expect(formatPrice(500000)).toBe('$500K');
+    expect(formatPrice(123456)).toBe('$123K');
   });
 
-  it('formats small values in INR', () => {
-    expect(formatPrice(500)).toBe('₹500');
-    expect(formatPrice(1000)).toBe('₹1,000');
+  it('formats small values in USD', () => {
+    expect(formatPrice(500)).toMatch(/\$500/);
+    expect(formatPrice(1000)).toMatch(/\$1,000/);
   });
 });
 

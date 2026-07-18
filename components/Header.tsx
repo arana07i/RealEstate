@@ -17,7 +17,7 @@ const navLinks = [
 
 const drawerVariants = {
   closed: { opacity: 0, x: '-100%' },
-  open: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } },
+  open: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 30 } },
 };
 
 const itemVariants = {
@@ -25,7 +25,7 @@ const itemVariants = {
   open: (i: number) => ({
     opacity: 1,
     x: 0,
-    transition: { delay: i * 0.08, type: 'spring', stiffness: 300, damping: 30 },
+    transition: { delay: i * 0.08, type: 'spring' as const, stiffness: 300, damping: 30 },
   }),
 };
 

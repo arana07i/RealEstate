@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { sendVisitConfirmation } from '@/lib/email';
 import { logger } from '@/lib/logger';
+import { getMeetingLinkBase } from '@/lib/env';
 
 type CalendarEventResponse = {
   id: string;
@@ -70,7 +71,8 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { title, description, start, end, location, status, property_id, lead_id, agent_id, duration, reminder_type } = await request.json();
 
-  const meetingLink = `https://meet.hcrealestate.com/${Math.random().toString(36).substring(2, 11)}`;
+  const meetingLinkBase = getMeetingLinkBase();
+  const meetingLink = `${meetingLinkBase}/${Math.random().toString(36).substring(2, 11)}`;
 
   let agencyId: string | null = null;
 

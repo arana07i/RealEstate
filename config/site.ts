@@ -12,7 +12,7 @@ export const siteConfig = {
   seo: {
     title: 'PropertyHub | Modern Real Estate Platform',
     keywords: ['real estate', 'property', 'housing', 'commercial', 'residential', 'agency', 'CRM', 'listings'],
-    ogImage: 'https://propertyhub.com/images/og-image.jpg',
+    ogImage: '/og-image.png',
   },
 } as const;
 

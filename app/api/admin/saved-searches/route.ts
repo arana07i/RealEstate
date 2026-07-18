@@ -189,7 +189,7 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-export async function sendSavedSearchAlerts(supabase: SupabaseClient, agencyId: string | null) {
+async function sendSavedSearchAlerts(supabase: SupabaseClient, agencyId: string | null) {
   if (!agencyId) return;
 
   const { data: savedSearches } = await supabase

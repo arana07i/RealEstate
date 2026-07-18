@@ -1,21 +1,23 @@
 import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
+import { getSiteUrl } from '@/lib/env';
 
 export function generateOrganizationSchema(): Metadata {
+  const siteUrl = getSiteUrl();
   return {
     other: {
-      '@type': ['application/ld+json'],
+      'application/ld+json': JSON.stringify(getOrganizationSchema(siteUrl)),
     },
   };
 }
 
-export const ORGANIZATION_SCHEMA = {
+const ORGANIZATION_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'RealEstateAgent',
   name: siteConfig.name,
-  url: siteConfig.seo.ogImage?.replace('/images/og-image.jpg', 'https://propertyhub.com') ?? 'https://propertyhub.com',
-  logo: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/images/logo.png`,
-  image: siteConfig.seo.ogImage ?? 'https://propertyhub.com/images/hero.jpg',
+  url: '',
+  logo: '/images/logo.png',
+  image: '/images/hero.jpg',
   description: siteConfig.description,
   address: {
     '@type': 'PostalAddress',
@@ -32,6 +34,15 @@ export const ORGANIZATION_SCHEMA = {
     siteConfig.socialLinks.linkedin,
   ],
 };
+
+export function getOrganizationSchema(siteUrl: string): Record<string, unknown> {
+  return {
+    ...ORGANIZATION_SCHEMA,
+    url: siteUrl,
+    logo: `${siteUrl}/images/logo.png`,
+    image: `${siteUrl}/images/hero.jpg`,
+  };
+}
 
 export function generatePropertySchema(listing: {
   id: string;
@@ -77,6 +88,21 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
       position: index + 1,
       name: item.name,
       item: item.url,
+    })),
+  };
+}
+
+export function generateFAQSchema(faqs: Array<{ question: string; answer: string }>): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
     })),
   };
 }

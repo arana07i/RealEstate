@@ -351,30 +351,13 @@ export function calculateDistance(coord1: Coordinates, coord2: Coordinates): num
   return Math.round((R * c) / 1000);
 }
 
-export const DEFAULT_COORDINATES: Coordinates = { lat: 31.0615, lng: 77.1708 };
-
+export const DEFAULT_COORDINATES: Coordinates = { lat: 40.7128, lng: -74.0060 };
+ 
 export function getDefaultMapCenter(location?: string): Coordinates {
-  const shimlaLocations: Record<string, Coordinates> = {
-    'mall road': { lat: 31.0648, lng: 77.1712 },
-    'chotta shimla': { lat: 31.0578, lng: 77.1689 },
-    'mashobra': { lat: 31.1522, lng: 77.2654 },
-    'kufri': { lat: 31.1434, lng: 77.2006 },
-    'summer hill': { lat: 31.0542, lng: 77.1787 },
-    'sanjauli': { lat: 31.0721, lng: 77.1658 },
-    'tara devi': { lat: 31.0889, lng: 77.1934 },
-    'dhalli': { lat: 31.0694, lng: 77.2456 },
-    'boileauganj': { lat: 31.0567, lng: 77.1612 },
-  };
-
   if (location) {
-    const lowerLocation = location.toLowerCase();
-    for (const [key, coords] of Object.entries(shimlaLocations)) {
-      if (lowerLocation.includes(key)) {
-        return coords;
-      }
-    }
+    // Generic fallback - coordinates would be resolved via geocoding in production
+    return DEFAULT_COORDINATES;
   }
-
   return DEFAULT_COORDINATES;
 }
 

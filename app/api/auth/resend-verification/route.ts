@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
         const { error } = await adminClient.auth.admin.generateLink({
           type: 'signup',
           email: email,
+          password: Math.random().toString(36).slice(-10),
           options: {
             redirectTo: redirectUrl,
           },

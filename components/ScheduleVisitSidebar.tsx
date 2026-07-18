@@ -7,11 +7,12 @@ import { InquiryForm } from './InquiryForm';
 interface ScheduleVisitSidebarProps {
   propertyId: string;
   propertyTitle: string;
+  agencyId: string;
 }
 
 const TIME_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'];
 
-export function ScheduleVisitSidebar({ propertyId, propertyTitle }: ScheduleVisitSidebarProps) {
+export function ScheduleVisitSidebar({ propertyId, propertyTitle, agencyId }: ScheduleVisitSidebarProps) {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [preferredContact, setPreferredContact] = useState('call');
@@ -76,7 +77,7 @@ className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium capitalize 
           </div>
         </div>
 
-        <InquiryForm propertyId={propertyId} />
+        <InquiryForm propertyId={propertyId} agencyId={agencyId} />
 
         <div className="space-y-2.5 pt-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">

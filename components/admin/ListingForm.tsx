@@ -184,7 +184,7 @@ export function ListingForm({ mode = 'create', initialData }: ListingFormProps) 
           />
         </div>
         <div>
-          <label htmlFor="price" className="block text-sm font-medium">Price (₹)</label>
+          <label htmlFor="price" className="block text-sm font-medium">Price ($)</label>
           <input
             type="number"
             id="price"

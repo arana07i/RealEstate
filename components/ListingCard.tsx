@@ -42,7 +42,7 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
 
   const formatMortgage = (price: number) => {
     const monthly = Math.round((price * 0.005) / 12);
-    return `₹${(monthly / 100000).toFixed(1)}L/mo`;
+    return `$${monthly.toLocaleString()}/mo est.`;
   };
 
   return (
@@ -211,12 +211,12 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
                 {listing.bathrooms}
               </span>
             )}
-            {listing.area_sqft != null && (
-              <span className="flex items-center gap-1.5">
-                <Square size={16} />
-                {listing.area_sqft.toLocaleString('en-IN')} sq ft
-              </span>
-            )}
+{listing.area_sqft != null && (
+               <span className="flex items-center gap-1.5">
+                 <Square size={16} />
+                 {listing.area_sqft.toLocaleString('en-US')} sq ft
+               </span>
+             )}
           </div>
 
           {listing.property_score != null && !isSold && (

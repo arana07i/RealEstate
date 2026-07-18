@@ -6,6 +6,15 @@ import { Search, MapPin, DollarSign, Bed, X, Clock, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface SavedSearch {
+  id: number;
+  location: string;
+  minPrice: string;
+  maxPrice: string;
+  bedrooms: string;
+  timestamp: string;
+}
+
 const GENERIC_LOCATIONS = [
   'All Locations',
   'Downtown',
@@ -21,8 +30,6 @@ const GENERIC_LOCATIONS = [
   'Premium Neighborhood',
   'Green Community',
 ] as const;
-
-const SHIMLA_LOCATIONS = GENERIC_LOCATIONS;
 
 const POPULAR_SEARCHES = ['Downtown', 'Waterfront', 'City Center', 'Business District', 'Premium Neighborhood', 'Suburban Area'];
 
@@ -40,8 +47,8 @@ export function SearchFilter() {
   const bedrooms = searchParams?.get('bedrooms') ?? '';
 
   const locationSuggestions = useMemo(() => {
-    if (!locationQuery) return SHIMLA_LOCATIONS.filter(l => l !== 'All Locations').slice(0, 5);
-    return SHIMLA_LOCATIONS.filter(l => 
+    if (!locationQuery) return GENERIC_LOCATIONS.filter(l => l !== 'All Locations').slice(0, 5);
+    return GENERIC_LOCATIONS.filter(l => 
       l.toLowerCase().includes(locationQuery.toLowerCase()) && l !== 'All Locations'
     ).slice(0, 5);
   }, [locationQuery]);
@@ -58,7 +65,7 @@ export function SearchFilter() {
   const saveSearch = useCallback((searchData: { location: string; minPrice: string; maxPrice: string; bedrooms: string }) => {
     if (typeof window === 'undefined') return;
     const newSearch = { ...searchData, id: Date.now(), timestamp: new Date().toISOString() };
-    const updated = [newSearch, ...savedSearches.filter((s: any) => s.location !== searchData.location).slice(0, 4)];
+    const updated = [newSearch, ...savedSearches.filter((s: SavedSearch) => s.location !== searchData.location).slice(0, 4)];
     localStorage.setItem('savedSearches', JSON.stringify(updated));
   }, [savedSearches]);
 
@@ -97,9 +104,14 @@ export function SearchFilter() {
     });
   };
 
-  const applySavedSearch = (search: any) => {
+  const applySavedSearch = (search: SavedSearch) => {
     setLocationQuery(search.location);
-    updateFilters(search);
+    updateFilters({
+      location: search.location,
+      minPrice: search.minPrice,
+      maxPrice: search.maxPrice,
+      bedrooms: search.bedrooms,
+    });
     setIsMobileOpen(false);
   };
 
@@ -137,7 +149,7 @@ export function SearchFilter() {
                Recent Searches
              </p>
             <div className="flex flex-wrap gap-2">
-              {savedSearches.map((search: any) => (
+              {savedSearches.map((search: SavedSearch) => (
                 <button
                   key={search.id}
                   type="button"

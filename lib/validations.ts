@@ -78,7 +78,7 @@ export const LeadFiltersSchema = z.object({
   status: z.array(z.enum(['new', 'qualified', 'proposal', 'negotiation', 'closed_won', 'closed_lost'])).optional(),
   source: z.array(z.enum(['website', 'referral', 'social_media', 'email_campaign', 'cold_call', 'event', 'other'])).optional(),
   tags: z.array(z.string().uuid()).optional(),
-  assigned_to: z.string().uuid().optional(),
+  assigned_to: z.array(z.string().uuid()).optional(),
   search: z.string().optional(),
   date_range: z.enum(['today', 'week', 'month', 'quarter', 'year']).optional(),
   value_min: z.number().nonnegative().optional(),

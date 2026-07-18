@@ -30,7 +30,7 @@ const iconButtonVariants = cva(
 );
 
 export interface IconButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onAnimationStart" | "onDrag" | "onDragEnd" | "onDragStart" | "onTransitionEnd">,
     VariantProps<typeof iconButtonVariants> {}
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(

@@ -5,9 +5,10 @@ import { toast } from 'react-hot-toast';
 
 interface InquiryFormProps {
   propertyId: string;
+  agencyId: string;
 }
 
-export function InquiryForm({ propertyId }: InquiryFormProps) {
+export function InquiryForm({ propertyId, agencyId }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,7 +30,7 @@ export function InquiryForm({ propertyId }: InquiryFormProps) {
       const response = await fetch('/api/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, property_id: propertyId }),
+        body: JSON.stringify({ ...formData, property_id: propertyId, agency_id: agencyId }),
       });
 
       const result = await response.json();

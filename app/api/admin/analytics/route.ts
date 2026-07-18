@@ -14,6 +14,8 @@ interface AnalyticsStats {
   totalLeads: number;
   totalVisits: number;
   totalRevenue: number;
+  totalVisitors: number;
+  totalBookings: number;
   conversionRate: number;
   revenueGrowth: number;
 }
@@ -478,10 +480,10 @@ async function getAgentRankings(
   }
 
   const agentStats: Record<string, { name: string; sales: number }> = {};
-  for (const visit of data as { agent_id: string; agent?: { full_name: string } }[]) {
+  for (const visit of data as { agent_id: string; agent?: { full_name?: string }[] }[]) {
     const agentId = visit.agent_id;
     if (!agentStats[agentId]) {
-      agentStats[agentId] = { name: visit.agent?.full_name ?? 'Unknown', sales: 0 };
+      agentStats[agentId] = { name: visit.agent?.[0]?.full_name ?? 'Unknown', sales: 0 };
     }
     agentStats[agentId].sales += 1;
   }
@@ -542,6 +544,10 @@ function calculateStats(
   const conversionRate = totalVisitors > 0 ? (totalBookings / totalVisitors) * 100 : 0;
 
   return {
+    totalListings: listingStats.total,
+    totalInquiries: inquiryCount,
+    totalLeads: leadStats.total,
+    totalVisits: visitCount,
     totalRevenue,
     totalVisitors,
     totalBookings: totalBookings ?? 0,

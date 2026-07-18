@@ -86,12 +86,12 @@ export function SchedulingCalendar() {
   };
 
   const updateVisitMutation = useMutation({
-    mutationFn: async ({ id, scheduled_at }: { id: string; scheduled_at?: string; status?: VisitStatus }) => {
+    mutationFn: async (data: { id: string; scheduled_at?: string; status?: VisitStatus }) => {
       const supabase = createClient();
-      const updates: any = {};
-      if (scheduled_at) updates.scheduled_at = scheduled_at;
-      if (status) updates.status = status;
-      const { error } = await supabase.from('visits').update(updates).eq('id', id);
+      const updates: Record<string, string | undefined> = {};
+      if (data.scheduled_at) updates.scheduled_at = data.scheduled_at;
+      if (data.status) updates.status = data.status;
+      const { error } = await supabase.from('visits').update(updates).eq('id', data.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -451,13 +451,18 @@ function DailyView({
   );
 }
 
+interface AgentInfo {
+  id: string;
+  full_name: string;
+}
+
 function AvailabilityLegend({ availability }: { availability: AgentAvailability[] }) {
   const { data: agents } = useQuery({
     queryKey: ['agents-for-legend'],
     queryFn: async () => {
       const supabase = createClient();
       const { data } = await supabase.from('profiles').select('id, full_name').eq('role', 'agent');
-      return data || [];
+      return data as AgentInfo[] || [];
     },
   });
 
@@ -468,7 +473,7 @@ function AvailabilityLegend({ availability }: { availability: AgentAvailability[
       </CardHeader>
       <CardContent className="p-4">
         <div className="grid gap-4 md:grid-cols-2">
-          {agents?.map((agent: any) => {
+          {agents?.map((agent) => {
             const agentAvail = availability.filter((a) => a.agent_id === agent.id);
             const workingDays = agentAvail
               .filter((a) => a.is_available)

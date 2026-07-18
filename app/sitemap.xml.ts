@@ -1,9 +1,10 @@
 import { getListingIds } from '@/lib/listings';
+import { getSiteUrl } from '@/lib/env';
 
 export const runtime = 'edge';
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://himalayancrestrealty.com';
+  const baseUrl = getSiteUrl();
   const date = new Date().toISOString();
 
   const staticUrls = [

@@ -77,13 +77,15 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
   const images = listing.image_urls.length > 0 ? listing.image_urls : [PLACEHOLDER_IMAGE];
   const propertySchema = generatePropertySchema(listing);
+  const getBaseUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? 'https://propertyhub.com';
+
   const breadcrumbs = generateBreadcrumbSchema([
-    { name: 'Home', url: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/` },
-    { name: 'Properties', url: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}#listings` },
-    { name: listing.title, url: `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/listings/${listing.id}` },
+    { name: 'Home', url: `${getBaseUrl()}/` },
+    { name: 'Properties', url: `${getBaseUrl()}/#listings` },
+    { name: listing.title, url: `${getBaseUrl()}/listings/${listing.id}` },
   ]);
 
-  const propertyUrl = `${siteConfig.seo.ogImage?.replace('/images/og-image.jpg', '') ?? 'https://propertyhub.com'}/listings/${listing.id}`;
+  const propertyUrl = `${getBaseUrl()}/listings/${listing.id}`;
 
   return (
     <article className="pt-[72px] bg-background min-h-screen">
@@ -187,7 +189,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
             <div className="hidden lg:block">
               <div className="sticky top-20">
-                <ScheduleVisitSidebar propertyId={listing.id} propertyTitle={listing.title} />
+                <ScheduleVisitSidebar propertyId={listing.id} propertyTitle={listing.title} agencyId={listing.agency_id} />
               </div>
             </div>
           </div>

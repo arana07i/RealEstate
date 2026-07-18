@@ -118,7 +118,7 @@ function ExportButton({ data, filename }: { data: unknown[]; filename: string })
   };
 
   const exportPDF = () => {
-    console.log("PDF export would be implemented with jsPDF or similar library", data);
+    void data;
   };
 
   return (
@@ -167,10 +167,10 @@ export function RevenueChart({ data, title = "Revenue Analytics" }: { data: Reve
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="month" stroke="#64748b" />
-                <YAxis stroke="#64748b" tickFormatter={(v) => `₹${(v / 100000).toFixed(1)}L`} />
+                <YAxis stroke="#64748b" tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
-                  formatter={(v: any) => [`₹${(v / 100000).toFixed(2)} Lakh`, "Revenue"]}
+                  formatter={(v) => [`$${(Number(v) / 1000000).toFixed(2)} M`, "Revenue"]}
                 />
                 <Area type="monotone" dataKey="revenue" stroke="#d4af37" strokeWidth={2} fill="url(#revenueGradient)" />
                 <Line type="monotone" dataKey="bookings" stroke="#3b82f6" strokeWidth={2} dot={false} />
@@ -285,7 +285,7 @@ export function TrafficChart({ data, title = "Traffic Analytics" }: { data: Traf
                 </Pie>
                 <Tooltip
                   contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
-                  formatter={(v: any) => [`${v.toLocaleString()} visitors`, ""]}
+                  formatter={(v) => [`${Number(v ?? 0).toLocaleString()} visitors`, ""]}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -346,7 +346,7 @@ export function TopCitiesTable({ data }: { data: CityPerformance[] }) {
                     <td className="py-3 font-medium text-foreground">{city.city}</td>
 <td className="py-3 text-muted-foreground">{city.properties}</td>
                      <td className="py-3 text-muted-foreground">{city.bookings}</td>
-                    <td className="py-3 font-semibold text-emerald-600">₹{(city.revenue / 100000).toFixed(1)}L</td>
+                    <td className="py-3 font-semibold text-emerald-600">${(city.revenue / 1000000).toFixed(1)}M</td>
                     <td className={`py-3 font-medium ${city.growth >= 0 ? "text-emerald-600" : "text-red-600"}`}>
                       {city.growth >= 0 ? "+" : ""}{city.growth}%
                     </td>
@@ -380,7 +380,7 @@ export function TopPropertiesChart({ data }: { data: PropertyPerformance[] }) {
               <BarChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="property" stroke="#64748b" />
-                <YAxis stroke="#64748b" tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`} />
+                <YAxis stroke="#64748b" tickFormatter={(v) => `$${(v / 1000000).toFixed(0)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
                 />
@@ -403,7 +403,7 @@ export function TopPropertiesChart({ data }: { data: PropertyPerformance[] }) {
                    <p className="text-sm text-muted-foreground">{prop.views} views • {prop.conversion}% conversion</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-foreground">₹{(prop.revenue / 100000).toFixed(1)}L</p>
+                    <p className="font-semibold text-foreground">${(prop.revenue / 1000000).toFixed(1)}M</p>
                    <p className="text-sm text-muted-foreground">{prop.bookings} bookings</p>
                 </div>
               </motion.div>
@@ -672,7 +672,7 @@ export function AnalyticsStatsGrid({ stats }: { stats: AnalyticsStats }) {
       }}
       className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
     >
-      <StatsCard title="Total Revenue" value={stats.totalRevenue} prefix="₹" suffix="L" growth={stats.revenueGrowth} />
+      <StatsCard title="Total Revenue" value={stats.totalRevenue} prefix="$" suffix="" growth={stats.revenueGrowth} />
       <StatsCard title="Total Visitors" value={stats.totalVisitors} prefix="" suffix="" growth={stats.visitorGrowth} />
       <StatsCard title="Total Bookings" value={stats.totalBookings} prefix="" suffix="" growth={stats.bookingGrowth} />
       <StatsCard title="Conversion Rate" value={stats.conversionRate} prefix="" suffix="%" growth={0} />

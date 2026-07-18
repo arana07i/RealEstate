@@ -58,27 +58,27 @@ export const LeadCard = memo(function LeadCard({ lead, onClick, onStatusChange }
               </Badge>
             </div>
           </div>
-          {lead.value > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-1 text-sm text-muted-foreground dark:text-muted-foreground"
-            >
-              <IndianRupee size={14} />
-              <span>{(lead.value / 100000).toFixed(2)} L</span>
-            </motion.div>
-          )}
+{lead.value && lead.value > 0 && (
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               className="flex items-center gap-1 text-sm text-muted-foreground dark:text-muted-foreground"
+             >
+               <IndianRupee size={14} />
+               <span>{(lead.value / 100000).toFixed(2)} L</span>
+             </motion.div>
+           )}
         </div>
 
         <div className="space-y-2">
 <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
-             <Mail size={14} />
-             <span className="truncate">{lead.email}</span>
-           </div>
-           <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
-             <Phone size={14} />
-             <span>{lead.phone}</span>
-           </div>
+              <Mail size={14} />
+              <span className="truncate">{lead.email ?? ""}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
+              <Phone size={14} />
+              <span>{lead.phone ?? ""}</span>
+            </div>
         </div>
 
         {lead.tags && lead.tags.length > 0 && (

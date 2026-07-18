@@ -58,7 +58,9 @@ export function PropertyMap({ properties, center, height = '400px', showNearby =
   }, [selectedProperty]);
 
   const loadGoogleMap = async () => {
-    if (!window.google?.maps || !mapRef.current) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const googleWindow = window as unknown as { google?: { maps: any } };
+    if (!googleWindow.google?.maps || !mapRef.current) {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
@@ -67,14 +69,14 @@ export function PropertyMap({ properties, center, height = '400px', showNearby =
       await new Promise((resolve) => script.onload = resolve);
     }
 
-    const map = new window.google.maps.Map(mapRef.current, {
+    const map = new googleWindow.google!.maps.Map(mapRef.current, {
       center: selectedProperty?.coordinates || mapCenter,
       zoom: 14,
     });
 
     properties.forEach((property) => {
       if (property.coordinates) {
-        new window.google.maps.Marker({
+        new googleWindow.google!.maps.Marker({
           position: property.coordinates,
           map,
           title: property.title,
@@ -177,7 +179,7 @@ className={`px-2 py-1 text-xs rounded ${
                       <p className="font-medium text-primary truncate">{property.title}</p>
                       <p className="text-sm text-muted-foreground truncate">{property.location}</p>
                       <p className="text-sm font-semibold text-accent mt-1">
-                        ₹{property.price.toLocaleString('en-IN')}
+                        ${property.price.toLocaleString('en-US')}
                       </p>
                       {property.coordinates && (
                         <div className="flex gap-2 mt-2">

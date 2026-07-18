@@ -82,16 +82,15 @@ export class SupabaseReviewRepository implements ReviewRepository {
   }
 
   async findById(id: string, agencyId?: string): Promise<Review | null> {
-    let query = this.supabase
+    const { data, error } = await this.supabase
       .from('reviews')
       .select(`
         *,
         profiles:user_id (full_name, avatar_url),
         listings:listing_id (title, location)
       `)
-      .eq('id', id);
-
-    const { data, error } = await query.single();
+      .eq('id', id)
+      .single();
     if (error) return null;
     return data as Review;
   }

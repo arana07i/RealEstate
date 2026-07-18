@@ -139,10 +139,10 @@ export class SupabaseLeadRepository implements LeadRepository {
 
         return {
           ...lead,
-          tags: leadTags?.map((t: { tags: { name: string; color: string } }) => ({
+          tags: leadTags?.map((t) => ({
             id: t.tag_id,
-            name: t.tags?.name ?? '',
-            color: t.tags?.color ?? '',
+            name: t.tags?.[0]?.name ?? '',
+            color: t.tags?.[0]?.color ?? '',
           })) ?? [],
           notes_count: notesCount ?? 0,
           assigned_to_name: assignedUser?.full_name ?? undefined,
@@ -205,10 +205,10 @@ export class SupabaseLeadRepository implements LeadRepository {
 
     return {
       ...lead,
-      tags: leadTags?.map((t: { tags: { name: string; color: string } }) => ({
+      tags: leadTags?.map((t) => ({
         id: t.tag_id,
-        name: t.tags?.name ?? '',
-        color: t.tags?.color ?? '',
+        name: t.tags?.[0]?.name ?? '',
+        color: t.tags?.[0]?.color ?? '',
       })) ?? [],
       notes_count: notesCount ?? 0,
       assigned_to_name: assignedUser?.full_name ?? undefined,
@@ -216,7 +216,7 @@ export class SupabaseLeadRepository implements LeadRepository {
     };
   }
 
-  async create(lead: Omit<Lead, 'id' | 'created_at' | 'updated_at' | 'tags' | 'notes_count' | 'last_activity' | 'assigned_to_name'> & { tag_ids?: string[] }, agencyId: string): Promise<Lead | null> {
+  async create(lead: Omit<Lead, 'id' | 'created_at' | 'updated_at' | 'tags' | 'notes_count' | 'last_activity' | 'assigned_to_name' | 'agency_id'> & { tag_ids?: string[] }, agencyId: string): Promise<Lead | null> {
     const supabase = await createClient();
 
     const { tag_ids, ...leadData } = lead;

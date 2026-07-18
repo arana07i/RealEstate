@@ -25,6 +25,21 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { PermissionGate } from '@/components/PermissionGate';
 import { createClient } from '@/lib/supabase/client';
+import { Profile } from '@/lib/types';
+
+interface Listing {
+  id: string;
+  status: string;
+  price: number;
+  views: number;
+  created_at: string;
+}
+
+interface DashboardData {
+  listings: Listing[];
+  inquiries: Inquiry[];
+  agents: Profile[];
+}
 
 interface RevenueData {
   month: string;
@@ -49,6 +64,9 @@ interface Agent {
   sales: number;
   revenue: number;
   rating: number;
+  full_name: string;
+  email: string;
+  avatar_url: string | null;
 }
 
 interface Inquiry {
@@ -129,11 +147,11 @@ const generatePropertyViews = (): PropertyView[] => [
 ];
 
 const generateMockAgents = (): Agent[] => [
-  { id: '1', name: 'Sarah Johnson', sales: 24, revenue: 1250000, rating: 4.9 },
-  { id: '2', name: 'Michael Chen', sales: 18, revenue: 980000, rating: 4.7 },
-  { id: '3', name: 'Priya Sharma', sales: 15, revenue: 875000, rating: 4.8 },
-  { id: '4', name: 'David Wilson', sales: 12, revenue: 720000, rating: 4.6 },
-  { id: '5', name: 'Anita Patel', sales: 9, revenue: 560000, rating: 4.5 },
+  { id: '1', name: 'Sarah Johnson', sales: 24, revenue: 1250000, rating: 4.9, full_name: 'Sarah Johnson', email: '', avatar_url: null },
+  { id: '2', name: 'Michael Chen', sales: 18, revenue: 980000, rating: 4.7, full_name: 'Michael Chen', email: '', avatar_url: null },
+  { id: '3', name: 'Priya Sharma', sales: 15, revenue: 875000, rating: 4.8, full_name: 'Priya Sharma', email: '', avatar_url: null },
+  { id: '4', name: 'David Wilson', sales: 12, revenue: 720000, rating: 4.6, full_name: 'David Wilson', email: '', avatar_url: null },
+  { id: '5', name: 'Anita Patel', sales: 9, revenue: 560000, rating: 4.5, full_name: 'Anita Patel', email: '', avatar_url: null },
 ];
 
 const generateMockInquiries = (): Inquiry[] => [
@@ -190,8 +208,8 @@ export default function AdminDashboardPage() {
   const mockVisits = useMemo(() => generateMockVisits(), []);
 
   const totalListings = data?.listings?.length || 0;
-  const activeListings = data?.listings?.filter((l: any) => l.status === 'active').length || 0;
-  const soldListings = data?.listings?.filter((l: any) => l.status === 'sold').length || 0;
+  const activeListings = data?.listings?.filter((l: Listing) => l.status === 'active').length || 0;
+  const soldListings = data?.listings?.filter((l: Listing) => l.status === 'sold').length || 0;
   const totalInquiries = data?.inquiries?.length || 0;
   const conversionRate = 18.3;
   const avgCommission = 2.4;
@@ -212,7 +230,7 @@ export default function AdminDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <RevenueCard
           title="Total Revenue"
-          value="₹2.4M"
+          value="$2.4M"
           change={12.5}
           data={revenueData}
           color="#10b981"
@@ -258,11 +276,11 @@ export default function AdminDashboardPage() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="month" stroke="#64748b" />
-                  <YAxis stroke="#64748b" tickFormatter={(v) => `₹${v / 100000}L`} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                    formatter={(v: any) => [`₹${(v / 100000).toFixed(2)} Lakh`, 'Revenue']}
-                  />
+<YAxis stroke="#64748b" tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                   <Tooltip
+                     contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
+                     formatter={(v: number) => [`$${(v / 1000000).toFixed(2)} M`, 'Revenue']}
+                   />
                   <Area type="monotone" dataKey="revenue" stroke="#d4af37" strokeWidth={2} fill="url(#revenueGradient)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -340,7 +358,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-<p className="font-semibold text-primary">₹{(agent.revenue / 100000).toFixed(1)}L</p>
+<p className="font-semibold text-primary">${(agent.revenue / 1000000).toFixed(1)}M</p>
                       <p className="text-sm text-muted-foreground">★ {agent.rating}</p>
                   </div>
                 </div>

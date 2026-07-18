@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       status: searchParams.getAll('status') as ('new' | 'qualified' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost')[] | undefined,
       source: searchParams.getAll('source') as ('website' | 'referral' | 'social_media' | 'email_campaign' | 'cold_call' | 'event' | 'other')[] | undefined,
       tags: searchParams.getAll('tags') || undefined,
-      assigned_to: searchParams.get('assigned_to') || undefined,
+      assigned_to: searchParams.getAll('assigned_to') || undefined,
       search: searchParams.get('search') || undefined,
       date_range: (searchParams.get('date_range') || undefined) as 'today' | 'week' | 'month' | 'quarter' | 'year' | undefined,
       value_min: searchParams.get('value_min') ? Number(searchParams.get('value_min')) : undefined,

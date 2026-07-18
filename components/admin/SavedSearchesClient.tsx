@@ -236,22 +236,22 @@ export function SavedSearchesClient({ initialSearches = [] }: SavedSearchesClien
                     <span className="font-medium text-primary">{search.filters.location}</span>
                   </div>
                 )}
-                {search.filters?.minPrice && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Min Price</span>
-                    <span className="font-medium text-primary">
-                      ₹{Number(search.filters.minPrice).toLocaleString()}
-                    </span>
-                  </div>
-                )}
-                {search.filters?.maxPrice && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Max Price</span>
-                    <span className="font-medium text-primary">
-                      ₹{Number(search.filters.maxPrice).toLocaleString()}
-                    </span>
-                  </div>
-                )}
+{search.filters?.minPrice && (
+                   <div className="flex justify-between">
+                     <span className="text-muted-foreground">Min Price</span>
+                     <span className="font-medium text-primary">
+                       ${Number(search.filters.minPrice).toLocaleString('en-US')}
+                     </span>
+                   </div>
+                 )}
+                 {search.filters?.maxPrice && (
+                   <div className="flex justify-between">
+                     <span className="text-muted-foreground">Max Price</span>
+                     <span className="font-medium text-primary">
+                       ${Number(search.filters.maxPrice).toLocaleString('en-US')}
+                     </span>
+                   </div>
+                 )}
                 {search.filters?.status && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Status</span>
@@ -354,7 +354,7 @@ export function SavedSearchesClient({ initialSearches = [] }: SavedSearchesClien
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="minPrice" className="block text-sm font-medium mb-1">
-                    Min Price (₹)
+                    Min Price ($)
                   </label>
                   <input
                     id="minPrice"
@@ -366,13 +366,13 @@ export function SavedSearchesClient({ initialSearches = [] }: SavedSearchesClien
                       ...formData,
                       filters: { ...formData.filters, minPrice: e.target.value }
                     })}
-                    placeholder="50,00,000"
+                    placeholder="500,000"
                     className="input w-full"
                   />
                 </div>
                 <div>
                   <label htmlFor="maxPrice" className="block text-sm font-medium mb-1">
-                    Max Price (₹)
+                    Max Price ($)
                   </label>
                   <input
                     id="maxPrice"
@@ -384,7 +384,7 @@ export function SavedSearchesClient({ initialSearches = [] }: SavedSearchesClien
                       ...formData,
                       filters: { ...formData.filters, maxPrice: e.target.value }
                     })}
-                    placeholder="5,00,00,000"
+                    placeholder="5,000,000"
                     className="input w-full"
                   />
                 </div>

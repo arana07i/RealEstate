@@ -479,7 +479,7 @@ export function ProfileClient() {
                 <div className="p-4">
                   <h3 className="font-medium text-primary">{item.listing.title}</h3>
                   <p className="text-sm text-muted-foreground">{item.listing.location}</p>
-                  <p className="font-bold text-primary mt-2">₹{item.listing.price.toLocaleString()}</p>
+                  <p className="font-bold text-primary mt-2">${item.listing.price.toLocaleString('en-US')}</p>
                 </div>
               </div>
             ))}
@@ -504,7 +504,7 @@ export function ProfileClient() {
                 <div className="p-4">
                   <h3 className="font-medium text-primary">{item.listing.title}</h3>
                   <p className="text-sm text-muted-foreground">{item.listing.location}</p>
-                  <p className="font-bold text-primary mt-2">₹{item.listing.price.toLocaleString()}</p>
+                  <p className="font-bold text-primary mt-2">${item.listing.price.toLocaleString('en-US')}</p>
                   <p className="text-xs text-muted-foreground mt-1">Viewed {formatDate(item.viewed_at)}</p>
                 </div>
               </div>

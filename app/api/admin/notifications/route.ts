@@ -113,9 +113,9 @@ export async function PATCH(request: NextRequest) {
 
       const { error } = await supabase
         .from('notifications')
+        .update({ read: true, updated_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .in('id', ids)
-        .update({ read: true, updated_at: new Date().toISOString() });
+        .in('id', ids);
 
       if (error) {
         logger.error('Failed to mark notifications read', { error: error.message });
@@ -143,10 +143,12 @@ export async function DELETE(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const ids = searchParams.get('ids')?.split(',').filter(Boolean) || null;
 
-    let query = supabase.from('notifications').eq('user_id', user.id).delete();
-
     if (ids && ids.length > 0) {
-      const { error } = await query.in('id', ids);
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', user.id)
+        .in('id', ids);
       if (error) {
         logger.error('Failed to delete notifications', { error: error.message });
         return NextResponse.json({ error: 'Failed to delete notifications' }, { status: 500 });
@@ -154,7 +156,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: true, deleted: ids.length });
     }
 
-    const { error } = await query;
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .eq('user_id', user.id);
     if (error) {
       logger.error('Failed to clear notifications', { error: error.message });
       return NextResponse.json({ error: 'Failed to clear notifications' }, { status: 500 });

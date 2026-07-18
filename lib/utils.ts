@@ -21,7 +21,7 @@ export function formatPrice(price: number): string {
 }
 
 export function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat('en-IN', {
+  return new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -53,8 +53,6 @@ export const GENERIC_LOCATIONS = [
   'Premium Neighborhood',
   'Green Community',
 ] as const;
-
-export const SHIMLA_LOCATIONS = GENERIC_LOCATIONS;
 
 export const PLACEHOLDER_IMAGE = '/images/placeholder-property.svg';
 

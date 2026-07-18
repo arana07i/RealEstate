@@ -182,18 +182,18 @@ className={`border-b-2 px-1 py-3 text-sm font-medium transition-colors ${
 <Mail size={16} className="text-muted-foreground" />
                       <span className="text-foreground">{lead.email}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Phone size={16} className="text-muted-foreground" />
-                      <span className="text-foreground">{lead.phone}</span>
-                    </div>
-                    {lead.value > 0 && (
-                      <div className="flex items-center gap-2">
-                        <IndianRupee size={16} className="text-muted-foreground" />
-                        <span className="text-foreground">
-                          {(lead.value / 100000).toFixed(2)} Lakh
-                        </span>
-                      </div>
-                    )}
+<div className="flex items-center gap-2">
+                       <Phone size={16} className="text-muted-foreground" />
+                       <span className="text-foreground">{lead.phone ?? ""}</span>
+                     </div>
+                     {lead.value && lead.value > 0 && (
+                       <div className="flex items-center gap-2">
+                         <IndianRupee size={16} className="text-muted-foreground" />
+                         <span className="text-foreground">
+                           {(lead.value / 100000).toFixed(2)} Lakh
+                         </span>
+                       </div>
+                     )}
                     {lead.assigned_to_name && (
                       <div className="flex items-center gap-2">
                         <User size={16} className="text-muted-foreground" />
